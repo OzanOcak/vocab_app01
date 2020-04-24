@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/Vocabulary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,14 +14,15 @@ class WordList extends StatefulWidget {
 }
 
 class _WordListState extends State<WordList> {
-  var word_list = const [];
+  var wordList = const [];
 
   Future loadMessageList() async {
-    var content = await rootBundle.loadString('data/words.json');
-    var collection = json.decode(content);
+    String content = await rootBundle.loadString('data/words.json');
+    List collection = json.decode(content);
+    List<Vocabulary> _wordList = collection.map((json) => Vocabulary.fromJson(json)).toList();
 
     setState(() {
-      word_list = collection;
+      wordList = _wordList;
     });
   }
 
@@ -35,20 +37,20 @@ class _WordListState extends State<WordList> {
         title: Text(widget.title),
       ),
       body: ListView.separated(
-        itemCount: word_list.length,
+        itemCount: wordList.length,
         separatorBuilder: (context, index) => Divider(),
         itemBuilder: (BuildContext context, int index) {
-          var vocabulary = word_list[index];
+          Vocabulary vocabulary = wordList[index];
 
           return ListTile(
             title: Text(
-              vocabulary['word']),
+              vocabulary.word),
               isThreeLine: true,
             leading: CircleAvatar(
-              child: Text(vocabulary['word'][0].toUpperCase()),
+              child: Text(vocabulary.word[0].toUpperCase()),
             ),
             subtitle: Text(
-              vocabulary['defination'],
+              vocabulary.defination,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
