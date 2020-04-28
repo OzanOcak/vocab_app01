@@ -1,9 +1,12 @@
-import 'dart:convert';
+//import 'dart:convert';
 
 import 'package:app/Vocabulary.dart';
 import 'package:flutter/material.dart';
 
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
+
+import 'WordInputButton.dart';
+import 'WordInputDetails.dart';
 
 class WordList extends StatefulWidget {
   final String title;
@@ -69,6 +72,15 @@ class _WordListState extends State<WordList> {
                            maxLines: 2,
                            overflow: TextOverflow.ellipsis,
                       ),
+                      onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              WordInputDetails(vocabulary.word, vocabulary.defination),
+                        ),
+                      );
+                    },
                     );
                     
                   },
@@ -76,7 +88,9 @@ class _WordListState extends State<WordList> {
 
             }
           },
-        ));
+        ),
+        floatingActionButton: WordInputButton(),
+    );
 
-    }
   }
+}
