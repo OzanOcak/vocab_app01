@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:app/Vocabulary.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
+import 'package:http/http.dart' as http;
 
 class WordList extends StatefulWidget {
   final String title;
@@ -17,7 +18,9 @@ class _WordListState extends State<WordList> {
   var wordList = const [];
 
   Future loadMessageList() async {
-    String content = await rootBundle.loadString('data/words.json');
+    
+    http.Response response =await http.get('http://www.mocky.io/v2/5ea78ce22f00003f33c4ee35');
+    String content = response.body;
     List collection = json.decode(content);
     List<Vocabulary> _wordList = collection.map((json) => Vocabulary.fromJson(json)).toList();
 
