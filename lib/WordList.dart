@@ -15,51 +15,68 @@ class WordList extends StatefulWidget {
 }
 
 class _WordListState extends State<WordList> {
-  var wordList = const [];
 
-  Future loadMessageList() async {
-    
-    http.Response response =await http.get('http://www.mocky.io/v2/5ea78ce22f00003f33c4ee35');
-    String content = response.body;
-    List collection = json.decode(content);
-    List<Vocabulary> _wordList = collection.map((json) => Vocabulary.fromJson(json)).toList();
-
-    setState(() {
-      wordList = _wordList;
-    });
-  }
+  Future<List<Vocabulary>> wordList;
 
   void initState() {
-    loadMessageList();
     super.initState();
+
+    wordList = Vocabulary.browse();
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView.separated(
-        itemCount: wordList.length,
-        separatorBuilder: (context, index) => Divider(),
-        itemBuilder: (BuildContext context, int index) {
-          Vocabulary vocabulary = wordList[index];
+          title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  var _wordList = Vocabulary.browse();
 
-          return ListTile(
-            title: Text(
-              vocabulary.word),
-              isThreeLine: true,
-            leading: CircleAvatar(
-              child: Text(vocabulary.word[0].toUpperCase()),
-            ),
-            subtitle: Text(
-              vocabulary.defination,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          );
-        },
-      ),
-    );
+                  setState(() {
+                    wordList = _wordList;
+                  });
+                })
+          ],
+        ),
+
+        body: FutureBuilder(
+          future: wordList,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Center(child: CircularProgressIndicator());
+              case ConnectionState.done:
+                if (snapshot.hasError)
+                  return Text("There was an error: ${snapshot.error}");
+                var wordList = snapshot.data;
+
+                return ListView.separated(
+                  itemCount: wordList.length,
+                  separatorBuilder: (context, index) => Divider(),
+                  itemBuilder: (BuildContext context, int index) {
+                    Vocabulary vocabulary = wordList[index];
+
+                     return ListTile(
+                       title: Text(vocabulary.word),
+                       isThreeLine: true,
+                       leading: CircleAvatar(child: Text(vocabulary.word[0].toUpperCase()),),
+                       subtitle: Text(
+                           vocabulary.defination,
+                           maxLines: 2,
+                           overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                    
+                  },
+                );
+
+            }
+          },
+        ));
+
+    }
   }
-}
