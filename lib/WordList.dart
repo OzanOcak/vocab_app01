@@ -1,4 +1,5 @@
 //import 'dart:convert';
+import 'dart:async';
 
 import 'package:app/Vocabulary.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +20,17 @@ class WordList extends StatefulWidget {
 
 class _WordListState extends State<WordList> {
 
-  Future<List<Vocabulary>> wordList;
+  Future<List<Vocabulary>> future;
+  List<Vocabulary> wordList;
 
   void initState() {
     super.initState();
+    fetch();
+  }
 
-    wordList = Vocabulary.browse();
+  void fetch() async {
+    future = Vocabulary.browse();
+    wordList = await future;
   }
 
   Widget build(BuildContext context) {
@@ -34,8 +40,8 @@ class _WordListState extends State<WordList> {
           actions: <Widget>[
             IconButton(
                 icon: Icon(Icons.refresh),
-                onPressed: () {
-                  var _wordList = Vocabulary.browse();
+                onPressed: () async {
+                  var _wordList = await Vocabulary.browse();
 
                   setState(() {
                     wordList = _wordList;
@@ -45,7 +51,7 @@ class _WordListState extends State<WordList> {
         ),
 
         body: FutureBuilder(
-          future: wordList,
+          future: future,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
@@ -89,7 +95,7 @@ class _WordListState extends State<WordList> {
             }
           },
         ),
-        floatingActionButton: WordInputButton(),
+        floatingActionButton: WordInputButton(wordList),
     );
 
   }

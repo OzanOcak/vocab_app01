@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -17,7 +18,7 @@ class Vocabulary {
     http.Response response =
         await http.get('http://www.mocky.io/v2/5ea78ce22f00003f33c4ee35');
 
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 2));
 
     String content = response.body;
     List collection = json.decode(content);
